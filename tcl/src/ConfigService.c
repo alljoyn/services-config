@@ -106,16 +106,16 @@ static uint8_t Config_IsValueValid(AJ_Message* msg, AJ_Message* reply, const cha
             if (strlen(value) > 0) {                                               // that it is not empty
                 return TRUE;
             } else {
-                AJ_MarshalErrorMsg(msg, reply, InvalidValue);
+                AJ_MarshalErrorMsg(msg, reply, AJSVC_ERROR_INVALID_VALUE);
             }
         } else {
-            AJ_MarshalErrorMsg(msg, reply, MaxSizeExceeded);
+            AJ_MarshalErrorMsg(msg, reply, AJSVC_ERROR_MAX_SIZE_EXCEEDED);
         }
     } else {
         if (App_IsValueValid(key, value)) {
             return TRUE;
         }
-        AJ_MarshalErrorMsg(msg, reply, InvalidValue);
+        AJ_MarshalErrorMsg(msg, reply, AJSVC_ERROR_INVALID_VALUE);
     }
     return FALSE;
 }
@@ -152,7 +152,7 @@ AJ_Status ConfigUpdateConfigurations(AJ_Message* msg)
                     if (PropertyStore_Update(key, langIndex, value) == AJ_OK) {
                         numOfUpdatedItems++;
                     } else {
-                        AJ_MarshalErrorMsg(msg, &reply, UpdateNotAllowed);
+                        AJ_MarshalErrorMsg(msg, &reply, AJSVC_ERROR_UPDATE_NOT_ALLOWED);
                     }
                 }
                 CHECK(AJ_UnmarshalCloseContainer(msg, &dict));
@@ -197,7 +197,7 @@ AJ_Status ConfigResetConfigurations(AJ_Message* msg)
                 if (PropertyStore_Reset(key, langIndex) == AJ_OK) {
                     numOfDeletedItems++;
                 } else {
-                    AJ_MarshalErrorMsg(msg, &reply, UpdateNotAllowed);
+                    AJ_MarshalErrorMsg(msg, &reply, AJSVC_ERROR_UPDATE_NOT_ALLOWED);
                 }
             }
             if (status != AJ_OK && status != AJ_ERR_NO_MORE) {
@@ -241,17 +241,17 @@ AJ_Status ConfigSetPasscode(AJ_Message* msg)
                     CHECK(App_SetPasscode(daemonRealm, newStringPasscode));
                 } else {
                     AJ_Printf("Error - newPasscode cannot be empty!\n");
-                    AJ_MarshalErrorMsg(msg, &reply, InvalidValue);
+                    AJ_MarshalErrorMsg(msg, &reply, AJSVC_ERROR_INVALID_VALUE);
                     CHECK(AJ_DeliverMsg(&reply));
                 }
             } else {
                 AJ_Printf("Error - newPasscode length %d > %d!\n", newPasscode.len, PASSWORD_VALUE_LENGTH);
-                AJ_MarshalErrorMsg(msg, &reply, MaxSizeExceeded);
+                AJ_MarshalErrorMsg(msg, &reply, AJSVC_ERROR_MAX_SIZE_EXCEEDED);
                 CHECK(AJ_DeliverMsg(&reply));
             }
         } else {
             AJ_Printf("Error - newPasscode is not an 'ay' rather type '%c'!\n", newPasscode.typeId);
-            AJ_MarshalErrorMsg(msg, &reply, InvalidValue);
+            AJ_MarshalErrorMsg(msg, &reply, AJSVC_ERROR_INVALID_VALUE);
             CHECK(AJ_DeliverMsg(&reply));
         }
     } while (0);
